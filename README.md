@@ -22,4 +22,4 @@ Use
 See Also
 --------
 
-	[vt](https://github.com/atks/vt) and associated [paper](http://t.co/J48Irh4wEe) does a nice job *decomposing* and *normalizing* variants.
++ [vt](https://github.com/atks/vt) and associated [paper](http://t.co/J48Irh4wEe) does a nice job *decomposing* and *normalizing* variants.
