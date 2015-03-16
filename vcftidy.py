@@ -480,10 +480,16 @@ def main(fh, fa=None, buffer_size=5000):
     var_buffer = []
     last_chrom = None
 
+    info_seen = False
     for line in fh:
         # just output header
         if line[0] == "#":
             print line.rstrip()
+        if not info_seen and line.startswith('##INFO'):
+            print '##INFO=<ID=ORIG_ALLELES,Number=1,Type=String,Description="For split records the original ALT field">'
+            print '##INFO=<ID=ORIG_ALLELE_i,Number=1,Type=Integer,Description="Order in the original ALT field of a split variant">'
+            info_seen = True
+
         if line.startswith("#CHROM\t"): break
 
     for v in gen_variants(fh):
