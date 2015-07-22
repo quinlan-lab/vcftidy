@@ -47,7 +47,7 @@ def snpeff_eff(eff, alt, alts):
     # it stores that index in the 10th position of the EFF field.
     idx = str(alts.index(alt) + 1)
     subset = [e for e in eff if e.split("|")[10].rstrip(")") == idx]
-    
+
     return ",".join(subset)
 
 
@@ -132,7 +132,7 @@ def fix_genos(genos, alt_idx, exclude=GT_EXCLUDE):
 
     >>> fix_genos(genos, 1)
     [{'GT': ['0', '1'], 'AO': '22', 'PL': '281,5,9'}, {'GT': ['0', '.'], 'AO': '122', 'PL': '0,30,323'}]
-    
+
     >>> fix_genos(genos, 2)
     [{'GT': ['0', '.'], 'AO': '33', 'PL': '281,58,115'}, {'GT': ['0', '1'], 'AO': '133', 'PL': '0,31,483'}]
 
@@ -143,6 +143,14 @@ def fix_genos(genos, alt_idx, exclude=GT_EXCLUDE):
 
     >>> fix_genos(genos, 2)
     [{'GT': ['0', '0'], 'GL': '281,58,115', 'AO': '-1', 'PL': '281,58,115'}]
+
+    >>> genos = [{'GT': ['0', '2']}, {'GT': ['0', '1']}, {'GT': ['0', '1']}]
+    >>> fix_genos(genos, 1)
+    [{'GT': ['0', '.']}, {'GT': ['0', '1']}, {'GT': ['0', '1']}]
+
+    >>> fix_genos(genos, 2)
+    [{'GT': ['0', '1']}, {'GT': ['0', '.']}, {'GT': ['0', '.']}]
+
 
     """
 
@@ -230,7 +238,7 @@ def fmt_genos(genos):
             g['GT'] = sep.join(g['GT'])
     vals = [":".join(str(v) for v in f.values()) for f in genos]
     return vals
-    
+
 
 def varsplit(ref, alts, info, frmt, gts):
     """
@@ -252,7 +260,7 @@ def varsplit(ref, alts, info, frmt, gts):
 
     # test new snp eff ANN= field
     >>> n = varsplit('G', ['A', 'C', 'T'],
-    ...              'ANN=A|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.|||||||', 
+    ...              'ANN=A|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,A|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,C|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.||||||,T|.|.|.|.|.|.|.|.|.|||||||',
     ...              'GT:DP:PL', ['1/2:81:281,5,9,58,0,115,338,46,116,809'])
 
     >>> next(n)
@@ -317,7 +325,7 @@ def varsplit(ref, alts, info, frmt, gts):
         yield ret
 
 
-def leftalign(chrom, pos, ref, alt, fa, max_shift=1000):        
+def leftalign(chrom, pos, ref, alt, fa, max_shift=1000):
     seq = fa[chrom][max(0, pos - max_shift - 1):pos + len(ref) - 1]
     assert seq.endswith(ref), (chrom, pos, ref, alt, seq[-10:])
     return _leftalign(pos, ref, alt, seq)[:3]
@@ -325,7 +333,7 @@ def leftalign(chrom, pos, ref, alt, fa, max_shift=1000):
 
 def _leftalign(pos, ref, alt, seq):
     """
-    
+
     simple implementation from the vt paper:
     # actual variant is 2-base CA insertion.
     Last argument indicates whether we ran out of sequence and therefore did not
@@ -438,7 +446,7 @@ def leftnorm(chrom, pos, ref, alt, fa=None):
         return normalize(pos, ref, alt)
 
     return normalize(*leftalign(chrom, pos, ref, alt, fa), left_only=True)
-    
+
 
 def main(fh, fa=None, buffer_size=5000):
 
@@ -452,7 +460,7 @@ def main(fh, fa=None, buffer_size=5000):
     def gen_variants(fh):
         for line in fh:
             fields = line.rstrip().split("\t")
-            pos, ref, alts, info = (int(fields[1]), fields[3], fields[4].split(","), fields[7]) 
+            pos, ref, alts, info = (int(fields[1]), fields[3], fields[4].split(","), fields[7])
             if len(fields) > 8:
                 frmt, gts = fields[8], fields[9:]
             else:
@@ -476,7 +484,7 @@ def main(fh, fa=None, buffer_size=5000):
         ov[1] = str(ov[1])
         ov.pop(2)
         print "\t".join(ov)
-    
+
     var_buffer = []
     last_chrom = None
 
